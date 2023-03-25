@@ -1,0 +1,59 @@
+﻿@model List<ERPMedicalCenter.Models.ViewModel.AppointmentViewModel>
+@{
+    ViewData["Title"] = "Appointment";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+
+
+
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Appointment</h1>
+
+</div>
+
+<!--- Add table Here--->
+<!--====================================================Add Table======================================-->
+<table id="example" >
+    <thead>
+        <tr>
+
+            <th>PersonName</th>
+            <th>Date</th>
+            <th>Gender</th>
+            <th>Age</th>
+            <th>Phone</th>
+            <th>Clinic</th>
+            <th>AppoinmentType</th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (ERPMedicalCenter.Models.ViewModel.AppointmentViewModel item in Model)
+        {
+            <tr>
+
+                <td><a asp-action="Patient" asp-controller="Dashboard" asp-route-ID="@item.ID">@item.PersonName</a></td>
+                <td>@item.Date.ToShortDateString()</td>
+                <td>@item.Gender</td>
+                <td>@item.Age</td>
+                <td>@item.Phone</td>
+                <td>@item.Clinic</td>
+                <td>@item.AppoinmentType</td>
+
+
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+
+@section Scripts {
+
+    <script>
+        $('#example').DataTable();
+    </script>
+}

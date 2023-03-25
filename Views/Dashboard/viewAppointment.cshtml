@@ -1,0 +1,139 @@
+﻿@model List<ERPMedicalCenter.Models.ViewModel.AppointmentViewModel>
+@{
+    ViewData["Title"] = "viewAppointment";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    List<ERPMedicalCenter.Models.ViewModel.DropDownList> Clinics = new ERPMedicalCenter.Models.ViewModel.DropDownList().downLists(mngrClinic.GetClinic(), "ClinicId", "Specialty"); ;
+    List<ERPMedicalCenter.Models.ViewModel.DropDownList> AppointmentTypes = new ERPMedicalCenter.Models.ViewModel.DropDownList().downLists(mngrAppoinmentType.GetAppoinmentType(), "ID", "Name"); ;
+
+}
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Make an Appointment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div><br>
+
+            <form asp-action="MakeAppoinment" asp-controller="Home" method="post">
+                <div class="form-row  d-flex justify-content-center form-group wow fadeInUpBig">
+                    <div class="col-md-5 form-group">
+                        <input type="text" name="FName" class="form-control" id="FName" placeholder="Your First Name">
+                    </div>
+                    <div class="col-md-5 form-group">
+                        <input type="text" name="LName" class="form-control" id="LName" placeholder="Your Last Name">
+                    </div>
+                    <div class="col-md-10 form-group">
+                        <select name="Gender" id="Gender" class="form-control " required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="col-md-10 form-group">
+                        <input type="text" name="Age" class="form-control" id="Age" placeholder="Your Age" required>
+                    </div>
+                    <div class="col-md-10 form-group">
+                        <input type="email" class="form-control" name="EMail" id="EMail" placeholder="Your Email" required>
+                    </div>
+
+                    <div class="col-md-10 form-group">
+                        <input type="tel" class="form-control" name="Phone" id="Phone" placeholder="Your Phone" required>
+
+                    </div>
+
+                    <!-- <div class="form-row"> -->
+
+                    <div class="col-md-10 form-group">
+                        <input type="date" name="AppoinmentDate" class="form-control datepicker" id="AppoinmentDate"
+                               placeholder="Appointment Date">
+                    </div>
+
+                    <div class="col-md-10 form-group">
+                        <select name="Clinic" id="Clinic" class="form-control " asp-items="@(new SelectList(Clinics,"Value","Text"))">
+                            <option value="">Select Clinic</option>
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-10 form-group">
+                        <select name="AppoinmentType" id="AppoinmentType" class="form-control" required asp-items="@(new SelectList(AppointmentTypes,"Value","Text"))">
+                            <option value="">Select Appointment Type</option>
+
+
+                        </select>
+
+                    </div>
+                    <div class=" col-md-10 form-group w-75">
+                        <textarea class="form-control " name="Notes" id="Notes" rows="2"
+                                  placeholder="Message (Optional)"></textarea>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Appointment</h1>
+
+</div>
+
+<div>
+    <button type="button" id="btnAdd" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+        create
+    </button>
+</div>
+<!--- Add table Here--->
+<!--====================================================Add Table======================================-->
+<table id="example">
+    <thead>
+        <tr>
+
+            <th>PersonName</th>
+            <th>Date</th>
+            <th>Gender</th>
+            <th>Age</th>
+            <th>Phone</th>
+            <th>Clinic</th>
+            <th>AppoinmentType</th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (ERPMedicalCenter.Models.ViewModel.AppointmentViewModel item in Model)
+        {
+            <tr>
+
+                <td><a asp-action="Patient" asp-controller="Dashboard" asp-route-ID="@item.ID">@item.PersonName</a></td>
+                <td>@item.Date.ToShortDateString()</td>
+                <td>@item.Gender</td>
+                <td>@item.Age</td>
+                <td>@item.Phone</td>
+                <td>@item.Clinic</td>
+                <td>@item.AppoinmentType</td>
+
+
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+
+@section Scripts {
+
+    <script>
+        $('#example').DataTable();
+    </script>
+}

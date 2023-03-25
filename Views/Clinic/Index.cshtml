@@ -1,0 +1,186 @@
+﻿@model List<entClinic>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Clinic</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+
+                <div class="form-group">
+                    <label> Name</label>
+                    <input type="tel" class="form-control" id="ClinicName" placeholder="Clinic Name">
+                </div>
+                <input type="hidden" id="Type" />
+                <input type="hidden" id="ClinicID" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnSaveClinic" class="btn btn-primary" data-dismiss="modal">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Manage Clinic</h1>
+</div>
+
+<div>
+    <button type="button" id="btnAdd" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+        create
+    </button>
+</div>
+
+
+<table id="example">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th></th>
+
+        </tr>
+
+    </thead>
+    <tbody>
+        @foreach (entClinic item in Model)
+        {
+            <tr>
+                <td>@item.Specialty</td>
+                <td> <button class=" btn btn-primary btnEdite" itemID="@item.ClinicId">Edit</button><button class=" btn btn-danger btnDelete" itemID="@item.ClinicId">Delete</button></td>
+            </tr>
+        }
+
+
+    </tbody>
+</table>
+
+@section Scripts {
+
+    <script>
+        $('#example').DataTable();
+
+
+
+         $(".btnDelete").click(function () {
+            var id = $(this).attr("itemid");
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("Delete", "Clinic")",
+                content: "application/json; charset=utf-8",
+                dataType: "json",
+                data: ({
+                    ID : id
+                }),
+                success: function (d) {
+                    var resultData = $.parseJSON(d);
+                    if (resultData["ErrorCode"] == 0) {
+
+                        window.location.reload();
+                    } else {
+                        alert(resultData["Message"]);
+                    }
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+        });
+
+        $("#btnSaveClinic").click(function () {
+            var ClinicName = $("#ClinicName").val();
+            var type = $("#Type").val();
+            if (type == 1) {
+                // Create New
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Create", "Clinic")",
+                    content: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: {
+                        Specialty: ClinicName
+                    },
+                    success: function (d) {
+                        var resultData = $.parseJSON(d);
+                        if (resultData["ErrorCode"] == 0) {
+                            window.location.reload();
+                        } else {
+                            alert(resultData["Message"]);
+                        }
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            } else {
+                var ClinicID = $("#ClinicID").val();
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Edit", "Clinic")",
+                    content: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: {
+                        Specialty: ClinicName,
+                        ClinicId: ClinicID
+                    },
+                    success: function (d) {
+                        var resultData = $.parseJSON(d);
+                        if (resultData["ErrorCode"] == 0) {
+                            window.location.reload();
+                        } else {
+                            alert(resultData["Message"]);
+                        }
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+        });
+
+        $("#btnAdd").click(function () {
+            $("#Type").val("1");
+        });
+        $(".btnEdite").click(function () {
+            var itemID = $(this).attr("itemID");
+            $("#Type").val("0");
+            $("#ClinicName").val("");
+            $("#ClinicID").val(itemID);
+             $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetData", "Clinic")",
+                content: "application/json; charset=utf-8",
+                dataType: "json",
+                data: ({
+                    id: itemID
+                }),
+                success: function (d) {
+                    var resultData = $.parseJSON(d);
+                    if (resultData["ErrorCode"] == 0) {
+                        $("#ClinicName").val(resultData["Data"].Specialty);
+                    } else {
+                        alert(resultData["Message"]);
+                    }
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+            $('#exampleModal').modal('show');
+
+        });
+
+    </script>
+
+
+}

@@ -1,0 +1,158 @@
+﻿@model List<entContactUs>
+@{
+    ViewData["Title"] = "ContactUs";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">ContactUs</h1>
+</div>
+
+
+<table id="example">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Subject</th>
+            <th>Message</th>
+
+
+        </tr>
+
+    </thead>
+    <tbody>
+        @foreach (entContactUs item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.EMail</td>
+                <td>@item.Subject</td>
+                <td>@item.Message</td>
+            </tr>
+        }
+
+
+    </tbody>
+</table>
+
+@section Scripts {
+
+    <script>
+        $('#example').DataTable();
+
+
+
+         $(".btnDelete").click(function () {
+            var id = $(this).attr("itemid");
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("Delete", "Clinic")",
+                content: "application/json; charset=utf-8",
+                dataType: "json",
+                data: ({
+                    ID : id
+                }),
+                success: function (d) {
+                    var resultData = $.parseJSON(d);
+                    if (resultData["ErrorCode"] == 0) {
+
+                        window.location.reload();
+                    } else {
+                        alert(resultData["Message"]);
+                    }
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+        });
+
+        $("#btnSaveClinic").click(function () {
+            var ClinicName = $("#ClinicName").val();
+            var type = $("#Type").val();
+            if (type == 1) {
+                // Create New
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Create", "Clinic")",
+                    content: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: {
+                        Specialty: ClinicName
+                    },
+                    success: function (d) {
+                        var resultData = $.parseJSON(d);
+                        if (resultData["ErrorCode"] == 0) {
+                            window.location.reload();
+                        } else {
+                            alert(resultData["Message"]);
+                        }
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            } else {
+                var ClinicID = $("#ClinicID").val();
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Edit", "Clinic")",
+                    content: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: {
+                        Specialty: ClinicName,
+                        ClinicId: ClinicID
+                    },
+                    success: function (d) {
+                        var resultData = $.parseJSON(d);
+                        if (resultData["ErrorCode"] == 0) {
+                            window.location.reload();
+                        } else {
+                            alert(resultData["Message"]);
+                        }
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+        });
+
+        $("#btnAdd").click(function () {
+            $("#Type").val("1");
+        });
+        $(".btnEdite").click(function () {
+            var itemID = $(this).attr("itemID");
+            $("#Type").val("0");
+            $("#ClinicName").val("");
+            $("#ClinicID").val(itemID);
+             $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetData", "Clinic")",
+                content: "application/json; charset=utf-8",
+                dataType: "json",
+                data: ({
+                    id: itemID
+                }),
+                success: function (d) {
+                    var resultData = $.parseJSON(d);
+                    if (resultData["ErrorCode"] == 0) {
+                        $("#ClinicName").val(resultData["Data"].Specialty);
+                    } else {
+                        alert(resultData["Message"]);
+                    }
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+            $('#exampleModal').modal('show');
+
+        });
+
+    </script>
+
+
+}

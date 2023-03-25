@@ -1,0 +1,358 @@
+﻿@model List<ERPMedicalCenter.Models.ViewModel.StaffViewModel>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    List<ERPMedicalCenter.Models.ViewModel.DropDownList> Clinics = new ERPMedicalCenter.Models.ViewModel.DropDownList().downLists(mngrClinic.GetClinic(), "ClinicId", "Specialty"); ;
+    List<ERPMedicalCenter.Models.ViewModel.DropDownList> UserTypes = new ERPMedicalCenter.Models.ViewModel.DropDownList().downLists(mngrUserType.GetUserType(), "ID", "UserTypeName"); ;
+    List<ERPMedicalCenter.Models.ViewModel.DropDownList> Department = new ERPMedicalCenter.Models.ViewModel.DropDownList().downLists(mngrDepartment.GetDepartment(), "DepartmentId", "DepartmentName"); ;
+
+
+}
+
+<div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 80%;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add In Staff</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleFormControlInput1"> First Name</label>
+                        <input type="text" class="form-control" id="FName" placeholder=" ">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleFormControlInput1"> Second Name</label>
+                        <input type="text" class="form-control" id="LName" placeholder=" ">
+                    </div><br>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleFormControlInput1"> Gendor</label>
+                        <select class="custom-select" id="Gendor">
+                            <option selected></option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="exampleFormControlInput1"> National Number</label>
+                        <input type="text" class="form-control" id="NID" placeholder=" ">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleFormControlInput1">Age</label>
+                        <input type="number" class="form-control" id="Age" placeholder=" ">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="exampleFormControlInput1"> Phone</label>
+                        <input type="text" class="form-control" id="Phone" placeholder=" ">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleFormControlInput1"> Email</label>
+                        <input type="email" class="form-control" id="Email" placeholder=" ">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="exampleFormControlInput1"> Major</label>
+                        <input type="text" class="form-control" id="Major" placeholder=" ">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleFormControlInput1"> Experience</label>
+                        <input type="text" class="form-control" id="Experience" placeholder=" ">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="exampleFormControlInput1"> Salary</label>
+                        <input type="text" class="form-control" id="Salary" placeholder=" ">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleFormControlInput1"> Department</label>
+                        <select name="Department" id="Department" class="form-control" required asp-items="@(new SelectList(Department,"Value","Text"))">
+                            <option value="0">Select Department</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="exampleFormControlInput1"> Clinic</label>
+                        <select name="Clinic" id="Clinic" class="form-control" required asp-items="@(new SelectList(Clinics,"Value","Text"))">
+                            <option value="0">Select Clinics</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label for="exampleFormControlInput1"> UserName</label>
+                        <input type="text" class="form-control" id="UserName" placeholder=" ">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="exampleFormControlInput1"> Password</label>
+                        <input type="password" class="form-control" id="Password" placeholder=" ">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="exampleFormControlInput1"> UserType</label>
+                        <select name="UserType" id="UserType" class="form-control" required asp-items="@(new SelectList(UserTypes,"Value","Text"))">
+                            <option value="0">Select User Type</option>
+                        </select>
+                    </div>
+                </div>
+
+                <input type="hidden" id="Type" />
+                <input type="hidden" id="StaffID" />
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnSaveClinic" class="btn btn-primary" data-dismiss="modal">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Manage Stuff</h1>
+
+</div>
+
+<!--- Add table Here--->
+<!--====================================================Add Table======================================-->
+
+<div class="   stuffbutton mt-4 mb-5">
+    <button type="button" id="btnAdd" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+        Create
+    </button>
+
+</div>
+<table id="example">
+
+
+    <thead>
+        <tr>
+
+            <th>Name</th>
+
+            <th>NationalNumber</th>
+            <th>Gendor</th>
+            <th>Age</th>
+            <th>Phone</th>
+            <th>E-Mail</th>
+            <th>Major</th>
+            <th>Experaince</th>
+            <th>salary</th>
+            <th></th>
+
+        </tr>
+    </thead>
+
+    <tbody id="tableBody">
+        @foreach (ERPMedicalCenter.Models.ViewModel.StaffViewModel item in Model)
+        {
+            <tr>
+                <td>@item.FName @item.LName</td>
+                <td>@item.NationalNumber</td>
+                <td>@item.Gender</td>
+                <td>@item.Age</td>
+                <td>@item.Phone</td>
+                <td>@item.Email</td>
+                <td>@item.Major</td>
+                <td>@item.Experience</td>
+                <td>@item.salary</td>
+                <td> <button class=" btn btn-primary btnEdite" itemID="@item.ID">Edit</button><button class=" btn btn-danger btnDelete" itemID="@item.ID">Delete</button></td>
+
+            </tr>
+        }
+
+
+    </tbody>
+</table>
+
+
+
+@section Scripts {
+
+    <script>
+        $('#example').DataTable();
+
+        $(".btnDelete").click(function () {
+            var id = $(this).attr("itemID");
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("Delete", "Staff")",
+                content: "application/json; charset=utf-8",
+                dataType: "json",
+                data: ({
+                    ID : id
+                }),
+                success: function (d) {
+                    var resultData = $.parseJSON(d);
+                    if (resultData["ErrorCode"] == 0) {
+
+                        window.location.reload();
+                    } else {
+                        alert(resultData["Message"]);
+                    }
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+        });
+
+        $("#btnSaveClinic").click(function () {
+           
+            var FName = $("#FName").val();
+            var LName = $("#LName").val();
+            var Gendor =  $("#Gendor").val();
+            var Age =  $("#Age").val();
+            var Email =  $("#Email").val();
+            var Phone =  $("#Phone").val();
+            var NID =  $("#NID").val();
+            var Major =    $("#Major").val();
+            var Experience =   $("#Experience").val();
+            var Salary =   $("#Salary").val();
+            var Department =  $("#Department").val();
+            var Clinic =  $("#Clinic").val();
+            var UserName =  $("#UserName").val();
+            var UserType = $("#UserType").val();
+            var UserPassword = $("#Password").val();
+            var type = $("#Type").val();
+            if (type == 1) {
+                // Create New
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Create", "Staff")",
+                    content: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: {
+                        FName: FName,
+                        LName: LName,
+                        Gender: Gendor,
+                        Age: Age,
+                        Email: Email,
+                        Phone: Phone,
+                        NationalNumber: NID,
+                        Major: Major,
+                        Experience: Experience,
+                        salary: Salary,
+                        DepartmentId: Department,
+                        ClinicId: Clinic,
+                        UserName: UserName,
+                        UserType: UserType,
+                        Password: UserPassword
+                    },
+                    success: function (d) {
+                        var resultData = $.parseJSON(d);
+                        if (resultData["ErrorCode"] == 0) {
+                            window.location.reload();
+                        } else {
+                            alert(resultData["Message"]);
+                        }
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            } else {
+                var StuffID = $("#StaffID").val();
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Edit", "Staff")",
+                    content: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: {
+                        FName: FName,
+                        LName: LName,
+                        Gender: Gendor,
+                        Age: Age,
+                        Email: Email,
+                        Phone: Phone,
+                        NationalNumber: NID,
+                        Major: Major,
+                        Experience: Experience,
+                        salary: Salary,
+                        DepartmentId: Department,
+                        ClinicId: Clinic,
+                        UserName: UserName,
+                        UserType: UserType,
+                        Password: UserPassword,
+                        ID: StuffID
+                    },
+                    success: function (d) {
+                        var resultData = $.parseJSON(d);
+                        if (resultData["ErrorCode"] == 0) {
+                            window.location.reload();
+                        } else {
+                            alert(resultData["Message"]);
+                        }
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+        });
+
+        $("#btnAdd").click(function () {
+            $("#Type").val("1");
+        });
+        $(".btnEdite").click(function () {
+            var itemID = $(this).attr("itemID");
+            $("#Type").val("0");
+
+            $("#StaffID").val(itemID);
+             $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetData", "Staff")",
+                content: "application/json; charset=utf-8",
+                dataType: "json",
+                data: ({
+                    id: itemID
+                }),
+                success: function (d) {
+                    var resultData = $.parseJSON(d);
+                    if (resultData["ErrorCode"] == 0) {
+                        var result = resultData["Data"];
+                        $("#FName").val(result.FName);
+                        $("#LName").val(result.LName);
+                        $("#Gendor").val(result.Gender);
+                        $("#Age").val(result.Age);
+                        $("#Email").val(result.Email);
+                        $("#Phone").val(result.Phone);
+                        $("#NID").val(result.NationalNumber);
+                        $("#Major").val(result.Major);
+                        $("#Experience").val(result.Experience);
+                        $("#Salary").val(result.salary);
+                        $("#Department").val(result.DepartmentId);
+                        $("#Clinic").val(result.ClinicId);
+                        $("#UserName").val(result.UserName);
+                        $("#UserType").val(result.UserType);
+                    } else {
+                        alert(resultData["Message"]);
+                    }
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+            $('#exampleModal').modal('show');
+
+        });
+    </script>
+}

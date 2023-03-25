@@ -1,0 +1,552 @@
+﻿@model ERPMedicalCenter.Models.ViewModel.AppointmentViewModel
+@using System.Data
+@{
+    ViewData["Title"] = "Patient";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    List<ERPMedicalCenter.Models.ViewModel.DropDownList> Diagnosis = new ERPMedicalCenter.Models.ViewModel.DropDownList().downLists(mngrDiagnosis.GetDiagnosis(), "DiagnosisId", "DiagnosisName");
+    List<ERPMedicalCenter.Models.ViewModel.DropDownList> Ray = new ERPMedicalCenter.Models.ViewModel.DropDownList().downLists(mngrRay.GetRay(), "RayId", "RayName");
+    List<ERPMedicalCenter.Models.ViewModel.DropDownList> LabTest = new ERPMedicalCenter.Models.ViewModel.DropDownList().downLists(mngrLabTest.GetLabTest(), "LabId", "Name");
+    List<ERPMedicalCenter.Models.ViewModel.DropDownList> Drug = new ERPMedicalCenter.Models.ViewModel.DropDownList().downLists(mngrDrug.GetDrug(), "DrugId", "DrugName");
+
+
+    int PatientID = Model.PatientID;
+
+    // Nurse Info
+    DataRow[] NurseInfo = mngrPatientNurseInfo.GetPatientNurseInfo().Select($"PatientCode = {PatientID}");
+
+    // Rays
+    DataRow[] RaysInfo = mngrPatientRayRelation.GetPatientRayRelation().Select($"PatientCode = {PatientID}");
+
+    //LabTest
+    DataRow[] LabTestInfo = mngrPatientLabRelation.GetPatientLabRelation().Select($"PatientCode = {PatientID}");
+    //Diagnosis
+    DataRow[] DiagnosisInfo = mngrPatientDiagnosisRelation.GetPatientDiagnosisRelation().Select($"PatientCode = {PatientID}");
+
+    //Drug
+    DataRow[] DrugInfo = mngrPatientDrug.GetPatientDrug().Select($"PatientCode = {PatientID}");
+
+
+
+    string strHeight = "", strWeight = "", strAnemia = "", strAilments = "", strDrug = "", strSmooking = "";
+
+    if (NurseInfo != null && NurseInfo.Length > 0)
+    {
+        strHeight = (NurseInfo[0]["Height"] == DBNull.Value) ? "" : NurseInfo[0]["Height"].ToString();
+        strWeight = (NurseInfo[0]["Weight"] == DBNull.Value) ? "" : NurseInfo[0]["Weight"].ToString();
+        strAnemia = (NurseInfo[0]["Anemia"] == DBNull.Value) ? "" : NurseInfo[0]["Anemia"].ToString();
+        strAilments = (NurseInfo[0]["Ailments"] == DBNull.Value) ? "" : NurseInfo[0]["Ailments"].ToString();
+        strDrug = (NurseInfo[0]["Medicine"] == DBNull.Value) ? "" : NurseInfo[0]["Medicine"].ToString();
+        if (NurseInfo[0]["Medicine"] != DBNull.Value)
+        {
+            strSmooking = (Convert.ToBoolean(NurseInfo[0]["Smoking"])) ? "Smoking" : "Not Smoking";
+        }
+
+    }
+
+
+}
+
+
+
+
+
+
+@section style {
+    <link href="~/assets/css/dashboard.css" rel="stylesheet" />
+    <link href="~/assets/dashboardStyle.css" rel="stylesheet" />
+
+    <style>
+        section {
+            padding: 10px 0;
+        }
+
+        .nurseInfo {
+            margin-top: 0px;
+        }
+    </style>
+}
+
+
+    <div class="modal fade addR" id="nurseModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="exampleFormControlInput1">Height</label>
+                            <input type="number" id="height" class="form-control" placeholder="Enter height in cm ">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleFormControlInput1">Weight</label>
+                            <input type="number" id="weight" class="form-control" placeholder="Enter Patient Weight ">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleFormControlInput1">Anemia</label>
+                            <input type="number" id="anemia" class="form-control" placeholder=" ">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleFormControlInput1">Ailments</label>
+                            <input type="text" id="ailments" class="form-control" placeholder=" ">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleFormControlInput1">Drug</label>
+                            <input type="text" id="drug" class="form-control" placeholder=" ">
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="infoSmooking">
+                            <label class="form-check-label" for="defaultCheck1">
+                                Smooking
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="NurseInfo" class="btn btn-primary" data-dismiss="modal">Save</button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+<!---Diagnosis Model--->
+<div class="modal fade addR" id="diagnosisModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="fname">Diagnosis</label><br>
+                        <select name="Department" id="Diagnosis" class="form-control" required asp-items="@(new SelectList(Diagnosis,"Value","Text"))">
+                            <option value="0">Select Diagnosis</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="DiagnosisInfo" data-dismiss="modal">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Medicine Modal -->
+<div class="modal fade addR" id="medicineModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="fname">Select Drug</label><br>
+                        <select name="Department" id="Drug" class="form-control" required asp-items="@(new SelectList(Drug,"Value","Text"))">
+                            <option value="0">Select Drug</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="medicineButton" data-dismiss="modal">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--lab Modal -->
+<div class="modal fade addR" id="labModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="fname">Select Ray</label><br>
+                        <select name="Department" id="LabTest" class="form-control" required asp-items="@(new SelectList(LabTest,"Value","Text"))">
+                            <option value="0">Select LabTest</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="labButton" data-dismiss="modal">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ray Modal -->
+<div class="modal fade addR" id="rayModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="fname">Select Ray</label><br>
+                        <select name="Department" id="Ray" class="form-control" required asp-items="@(new SelectList(Ray,"Value","Text"))">
+                            <option value="0">Select Ray</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="rayButton" class="btn btn-primary " data-dismiss="modal">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Patient</h1>
+
+</div>
+
+
+
+<section class="nurseInfo">
+    <div class="container">
+        <h2 class="text-center">Patient Data</h2>
+        <form>
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <h5>Name</h5>
+                    <label>@Model.PersonName</label>
+                </div>
+                <div class="col-md-6">
+                    <h5>Age</h5>
+                    <label>@Model.Age</label>
+                </div>
+                <div class="col-md-6">
+                    <h5>Gender</h5>
+                    <label>@Model.Gender</label>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</section>
+
+<!---=================================== Add table Here===================================================--->
+<section class="dashButton">
+    <div class="container">
+        <ul>
+
+            <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#nurseModal">   Nurse Info</a>
+
+
+            <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#diagnosisModal">   Diagnosis</a>
+
+
+            <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#medicineModal">   Add Medicine</a>
+
+
+            <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#labModal">   Add Lab Test</a>
+
+            <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#rayModal">   Add Ray</a>
+
+        </ul>
+    </div>
+</section>
+
+
+
+<!--====================================================Start Nurse Info========================================-->
+<section class="nurseInfo">
+    <div class="container">
+        <h2 class="text-center">Nurse Info</h2>
+        <form>
+            <div class="row">
+                <div class="form-group col-lg-6 " id="myInfo">
+                    <h5>Patient Height :</h5>
+                    <label for="exampleFormControlInput1">@strHeight</label>
+                </div>
+                <div class="form-group  col-lg-6" id="myInfo">
+                    <h5>Patient Weight :</h5>
+                    <label for="exampleFormControlInput1">@strWeight</label>
+                </div>
+                <div class="form-group  col-lg-6" id="myInfo">
+                    <h5>Patient Anemia</h5>
+                    <label for="exampleFormControlInput1">@strAnemia</label>
+                </div>
+                <div class="form-group  col-lg-6" id="myInfo">
+                    <h5>Patient Ailments :</h5>
+                    <label for="exampleFormControlInput1">@strAilments</label>
+                </div>
+                <div class="form-group  col-lg-6" id="myInfo">
+                    <h5>Patient Drugs</h5>
+                    <label for="exampleFormControlInput1">@strDrug</label>
+                </div>
+                <div class="form-group  col-lg-6" id="myInfo">
+                    <h5>Patient Drugs</h5>
+                    <label for="exampleFormControlInput1">@strSmooking</label>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</section>
+<!--====================================================End Nurse Info==========================================-->
+<!--====================================================Start Diagnosis========================================-->
+<section class="nurseInfo">
+    <div class="container">
+        <h2 class="text-center">Diagnosis</h2>
+        <form>
+            <div class="form-group">
+                @if (DiagnosisInfo != null && DiagnosisInfo.Length > 0)
+                {
+                    foreach (DataRow item in DiagnosisInfo)
+                    {
+                        <label>@Diagnosis.FindAll(d => d.Value == Convert.ToInt32(item["DiagnosisId"]))[0].Text</label>
+                    }
+                }
+            </div>
+        </form>
+
+    </div>
+</section>
+<!--====================================================End Diagnosis==========================================-->
+<!--====================================================Start Medicine========================================-->
+<section class="nurseInfo">
+    <div class="container">
+        <h2 class="text-center">Add Medicine</h2>
+        <form>
+            <div class="form-group">
+                @if (DrugInfo != null && DrugInfo.Length > 0)
+                {
+                    foreach (DataRow item in DrugInfo)
+                    {
+                        <label>@Drug.FindAll(d => d.Value == Convert.ToInt32(item["DrugId"]))[0].Text</label>
+                    }
+                }
+
+            </div>
+        </form>
+
+    </div>
+</section>
+<!--====================================================EndMedicine==========================================-->
+<!--====================================================Start Lab Test========================================-->
+<section class="nurseInfo">
+    <div class="container">
+        <h2 class="text-center">Add Lab Test</h2>
+        <form>
+            <div class="form-group">
+                @if (LabTestInfo != null && LabTestInfo.Length > 0)
+                {
+                    foreach (DataRow item in LabTestInfo)
+                    {
+                        <label>@LabTest.FindAll(d => d.Value == Convert.ToInt32(item["LabId"]))[0].Text</label>
+                    }
+                }
+
+            </div>
+        </form>
+
+    </div>
+</section>
+<!--====================================================End Lab Test==========================================-->
+<!--====================================================Start Rays========================================-->
+<section class="nurseInfo">
+    <div class="container">
+        <h2 class="text-center">Add Rays</h2>
+        <form>
+            <div class="form-group">
+                @if (RaysInfo != null && RaysInfo.Length > 0)
+                {
+                    foreach (DataRow item in RaysInfo)
+                    {
+                        <label>@Ray.FindAll(d => d.Value == Convert.ToInt32(item["RayId"]))[0].Text</label>
+                    }
+                }
+
+            </div>
+        </form>
+
+    </div>
+</section>
+
+<input type="hidden" id="PatientID" value="@PatientID" />
+
+@section Scripts {
+
+    <script>
+        $("#NurseInfo").click(function () {
+            var PatientCode = $("#PatientID").val();
+            var Height = $("#height").val();
+            var Weight = $("#weight").val();
+            var Ailments = $("#ailments").val();
+            var Smoking = $("#infoSmooking").val();
+            if ($("#infoSmooking").val() == "on") {
+                Smoking = true;
+            } else {
+                Smoking = false;
+            }
+
+            var Anemia = $("#anemia").val();
+            var Medicine = $("#drug").val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("CreateNurseInfo", "Dashboard")",
+                content: "application/json; charset=utf-8",
+                dataType: "json",
+                data: {
+                    PatientCode: PatientCode,
+                    Height: Height,
+                    Weight: Weight,
+                    Ailments: Ailments,
+                    Smoking: Smoking,
+                    Anemia: Anemia,
+                    Medicine: Medicine
+                },
+                success: function (d) {
+                    var resultData = $.parseJSON(d);
+                    if (resultData["ErrorCode"] == 0) {
+
+                        window.location.reload();
+                    } else {
+                        alert(resultData["Message"]);
+                    }
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+        });
+
+        $("#DiagnosisInfo").click(function () {
+            var PatientCode = $("#PatientID").val();
+            var Diagnosis = $("#Diagnosis").val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("CreateDiagnosisInfo", "Dashboard")",
+                content: "application/json; charset=utf-8",
+                dataType: "json",
+                data: {
+                    PatientCode: PatientCode,
+                    DiagnosisId: Diagnosis
+                },
+                success: function (d) {
+                    var resultData = $.parseJSON(d);
+                    if (resultData["ErrorCode"] == 0) {
+
+                        window.location.reload();
+                    } else {
+                        alert(resultData["Message"]);
+                    }
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        });
+
+        $("#medicineButton").click(function () {
+            var PatientCode = $("#PatientID").val();
+            var Drug = $("#Drug").val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("CreateDrugInfo", "Dashboard")",
+                content: "application/json; charset=utf-8",
+                dataType: "json",
+                data: {
+                    PatientCode: PatientCode,
+                    DrugId: Drug
+                },
+                success: function (d) {
+                    var resultData = $.parseJSON(d);
+                    if (resultData["ErrorCode"] == 0) {
+
+                        window.location.reload();
+                    } else {
+                        alert(resultData["Message"]);
+                    }
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+     });
+
+        $("#labButton").click(function () {
+            var PatientCode = $("#PatientID").val();
+            var LabTest = $("#LabTest").val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("CreateLabTestInfo", "Dashboard")",
+                content: "application/json; charset=utf-8",
+                dataType: "json",
+                data: {
+                    PatientCode: PatientCode,
+                    LabId: LabTest
+                },
+                success: function (d) {
+                    var resultData = $.parseJSON(d);
+                    if (resultData["ErrorCode"] == 0) {
+
+                        window.location.reload();
+                    } else {
+                        alert(resultData["Message"]);
+                    }
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+         });
+
+        $("#rayButton").click(function () {
+            var PatientCode = $("#PatientID").val();
+            var Ray = $("#Ray").val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("CreateRaysInfo", "Dashboard")",
+                content: "application/json; charset=utf-8",
+                dataType: "json",
+                data: {
+                    PatientCode: PatientCode,
+                    RayId: Ray
+                },
+                success: function (d) {
+                    var resultData = $.parseJSON(d);
+                    if (resultData["ErrorCode"] == 0) {
+
+                        window.location.reload();
+                    } else {
+                        alert(resultData["Message"]);
+                    }
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        });
+
+    </script>
+}
